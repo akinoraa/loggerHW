@@ -1,9 +1,10 @@
 #include <iostream>
-#include <fstream> // ofstream class
-#include <string> // to_string()
+#include <fstream> // Required for the ofstream class
+#include <string>  // Required for using to_string()
 #include <ctime>
 #pragma warning(disable : 4996)
 using namespace std;
+
 class DateTime
 {
     int day;
@@ -13,9 +14,10 @@ class DateTime
     static struct tm* now;
 
 public:
+    // Set the day of the DateTime object
     void SetDay(int day)
     {
-        if (day > 0 && day <= 31) // TO DO: february 28-29, april june 30
+        if (day > 0 && day <= 31) // To-Do: Handle February (28-29) and months with 30 days
         {
             this->day = day;
         }
@@ -26,11 +28,13 @@ public:
         }
     }
 
+    // Get the day of the DateTime object
     int GetDay() const
     {
         return day;
     }
 
+    // Set the month of the DateTime object
     void SetMonth(int month)
     {
         if (month >= 1 && month <= 12)
@@ -44,68 +48,80 @@ public:
         }
     }
 
+    // Get the month of the DateTime object
     int GetMonth() const
     {
         return month;
     }
 
+    // Set the year of the DateTime object
     void SetYear(int year)
     {
         this->year = year;
     }
 
+    // Get the year of the DateTime object
     int GetYear() const
     {
         return year;
     }
 
-    DateTime() {
-        //cout << "DateTime c-tor without parameters\n";
+    // Default constructor for DateTime
+    DateTime()
+    {
         SetDay(11);
         SetMonth(10);
         SetYear(2023);
     }
 
-    DateTime(int day, int month) {
-        //cout << "DateTime c-tor with 2 parameters\n";
+    // Constructor for DateTime with day and month
+    DateTime(int day, int month)
+    {
         SetDay(day);
         SetMonth(month);
         SetYear(2023);
     }
 
+    // Constructor for DateTime with day, month, and year
     DateTime(int day, int month, int year)
     {
-        //cout << "DateTime main c-tor with 3 parameters\n";
         SetDay(day);
         SetMonth(month);
         SetYear(year);
     }
 
+    // Copy constructor for DateTime
     DateTime(const DateTime& original)
     {
-        //cout << "DateTime copy constructor\n";
         this->day = original.day;
         this->month = original.month;
         this->year = original.year;
     }
 
-    ~DateTime() {
-        //cout << "DateTime destructor\n";
+    // Destructor for DateTime
+    ~DateTime()
+    {
     }
 
+    // Print the date in the DateTime object
     void Print() const
     {
         cout << "Date: " << day << "." << month << "." << year << endl;
     }
 
-    int PrintHours() {
+    // Print the current hour
+    int PrintHours()
+    {
         return now->tm_hour;
     }
 
-    int PrintMinutes() {
+    // Print the current minute
+    int PrintMinutes()
+    {
         return now->tm_min;
     }
 
+    // Print the current second
     int PrintSeconds()
     {
         return now->tm_sec;
@@ -114,61 +130,56 @@ public:
 
 class Logger
 {
-    static Logger* instance; // 1) приватный статический указатель на единственный экземпляр класса
-    int log_сount = 0; // сколько раз происходила запись строки в файл
-    string path = "C:/test/test2.txt";
+    static Logger* instance;
+    int log_count = 0;
+    string path = "C:/test/test3.txt";
     DateTime* date_time;
 
-    Logger() // 2) конструктор - приватный (запрещает создавать объекты за пределами класса)
+    Logger()
     {
     }
 
 public:
-    static Logger* GetInstance() // 3) публичный статический геттер на получение адреса единственного объекта
+    // Get the Logger instance (singleton pattern)
+    static Logger* GetInstance()
     {
-        // если объекта журнала не существует - он создаётся
         return instance == nullptr ? instance = new Logger() : instance;
     }
 
-    void Write(string message) // записать в журнал строку текста
+    // Write a message to the log
+    void Write(string message)
     {
-        log_сount++;
+        log_count++;
         int hours = date_time->PrintHours(), minutes = date_time->PrintMinutes(), seconds = date_time->PrintSeconds();
         string time = to_string(hours);
         time += ':';
         time += to_string(minutes);
         time += ':';
         time += to_string(seconds);
-        // альтернативные варианты:
-        // 1) записать строку в коллекцию (массив, список и тд) и хранить данные в памяти
-        // 2) записать строку в файл
+
         ofstream output_file(path, ios::app);
         if (output_file.is_open())
         {
             output_file << message << " at " << time << "\n";
             cout << message << " at " << time << '\n';
             output_file.close();
-            //cout << "Строка успешно записана в файл.";
         }
         else
         {
-            //cerr << "Не удалось открыть файл для записи.";
         }
-        // 3) отправлять данные по сети
     }
 
+    // Write an integer value to the log
     void Write(int value)
     {
         Write(to_string(value));
     }
 };
 
-
 class Student
 {
     string name;
     string surname;
-    //Logger* logger;
     DateTime birthday;
     DateTime study_start;
 
@@ -182,14 +193,17 @@ class Student
 public:
     static int student_count;
 
-    bool countError()
+    // Check if student count is below a limit
+    bool CountError()
     {
         return student_count <= 15;
     }
-    void throwError()
+
+    // Handle the case when the student count limit is exceeded
+    void ThrowError()
     {
         try {
-            if (countError())
+            if (CountError())
                 student_count++;
             else
                 throw 1;
@@ -199,17 +213,20 @@ public:
             cout << "Student counter overloaded" << endl;
         }
     }
+
+    // Default constructor for Student
     Student()
     {
         SetName("Veronika");
         SetSurname("Geyna");
-        SetBirthday({ 14,07,2005 });
-        SetStudyStart({ 1,9,2022 });
-        throwError();
+        SetBirthday({ 14, 07, 2005 });
+        SetStudyStart({ 1, 9, 2022 });
+        ThrowError();
         Logger::GetInstance()->Write("Student created ");
     }
 
-    void printStudent()
+    // Print student information
+    void PrintStudent()
     {
         cout << "Name: " << name << endl;
         cout << "Surname: " << surname << endl;
@@ -219,6 +236,7 @@ public:
         study_start.Print();
     }
 
+    // Copy constructor for Student
     Student(const Student& original)
     {
         this->name = original.name;
@@ -233,10 +251,11 @@ public:
         {
             this->hometask_rates[i] = original.hometask_rates[i];
         }
-        throwError();
+        ThrowError();
         Logger::GetInstance()->Write("Student created");
     }
 
+    // Destructor for Student
     ~Student()
     {
         if (hometask_rates != nullptr)
@@ -246,37 +265,17 @@ public:
         }
         Logger::GetInstance()->Write("Student destroyed");
     }
+
+    // Set the student's name
     void SetName(string name)
     {
         this->name = name;
     }
 
+    // Get the student's name
     string GetName() const
     {
         return name;
-    }
-
-private:
-
-    void SetBirthday(const DateTime& birthday)
-    {
-        this->birthday = birthday;
-    }
-
-public:
-
-    DateTime GetBirthday() const
-    {
-        return birthday;
-    }
-
-    void SetStudyStart(const DateTime& study_start)
-    {
-        this->study_start = study_start;
-    }
-    DateTime GetStudyStart() const
-    {
-        return study_start;
     }
 
     void SetSurname(string surname)
@@ -289,9 +288,38 @@ public:
         return surname;
     }
 
+private:
+
+    // Set the student's birthday
+    void SetBirthday(const DateTime& birthday)
+    {
+        this->birthday = birthday;
+    }
+
+public:
+
+    // Get the student's birthday
+    DateTime GetBirthday() const
+    {
+        return birthday;
+    }
+
+    // Set the student's study start date
+    void SetStudyStart(const DateTime& study_start)
+    {
+        this->study_start = study_start;
+    }
+
+    // Get the student's study start date
+    DateTime GetStudyStart() const
+    {
+        return study_start;
+    }
+
+    // Add a hometask rate for the student
     void AddHometaskRate(unsigned int rate)
     {
-        if (rate < 1 ||rate > 12)
+        if (rate < 1 || rate > 12)
         {
             cout << "Incorrect value for parameter rate. Value must be from 1 to 12\n";
             throw "ERROR!";
@@ -314,6 +342,7 @@ public:
         hometask_rates_count++;
     }
 
+    // Print the hometask rates of the student
     void PrintHometaskRates() const
     {
         cout << "Hometasks rates: ";
@@ -324,6 +353,7 @@ public:
         cout << "\n";
     }
 
+    // Get a hometask rate by index
     int GetHometaskRateByIndex(unsigned int index)
     {
         if (index >= hometask_rates_count)
@@ -334,12 +364,14 @@ public:
         return hometask_rates[index];
     }
 
-    int GetHometasksRatesCount() const
+    // Get the count of hometask rates
+    int GetHometaskRatesCount() const
     {
         return hometask_rates_count;
     }
 
-    void AddPracticRate(int rate)
+    // Add a practice rate for the student
+    void AddPracticeRate(int rate)
     {
         if (rate < 1 || rate > 12)
         {
@@ -369,6 +401,7 @@ public:
         practice_rates_count++;
     }
 
+    // Get a practice rate by index
     int GetPracticeRateByIndex(unsigned int index)
     {
         if (index >= practice_rates_count)
@@ -379,11 +412,13 @@ public:
         return practice_rates[index];
     }
 
-    int GetPracticetasksRatesCount() const
+    // Get the count of practice rates
+    int GetPracticeRatesCount() const
     {
         return practice_rates_count;
     }
 
+    // Add an exam rate for the student
     void AddExamRate(int rate)
     {
         if (rate < 1 || rate > 12)
@@ -414,12 +449,13 @@ public:
         exam_rates_count++;
     }
 
-
-    int GetExamtasksRatesCount() const
+    // Get the count of exam rates
+    int GetExamRatesCount() const
     {
         return exam_rates_count;
     }
 
+    // Get an exam rate by index
     int GetExamRateByIndex(unsigned int index)
     {
         if (index >= exam_rates_count)
@@ -430,6 +466,7 @@ public:
         return exam_rates[index];
     }
 
+    // Print the practice task rates of the student
     void PrintPracticeTaskRates() const
     {
         for (int i = 0; i < practice_rates_count; i++)
@@ -446,17 +483,19 @@ class Group
     string groupName, specialty;
 
 public:
-
     static int group_count;
 
-    bool countError()
+    // Check if group count is below a limit
+    bool CountError()
     {
         return group_count <= 15;
     }
-    void throwError()
+
+    // Handle the case when the group count limit is exceeded
+    void ThrowError()
     {
         try {
-            if (countError())
+            if (CountError())
                 group_count++;
             else
                 throw 1;
@@ -467,8 +506,13 @@ public:
         }
     }
 
-    Group() : Group(0) { throwError(); }
+    // Default constructor for Group
+    Group() : Group(0)
+    {
+        ThrowError();
+    }
 
+    // Constructor for Group with a given group size
     Group(int groupSize)
     {
         this->groupSize = groupSize;
@@ -476,10 +520,11 @@ public:
         groupName = "KN-0";
         specialty = "Designer";
         group = new Student[groupSize];
-        throwError();
+        ThrowError();
         Logger::GetInstance()->Write("Group created");
     }
 
+    // Copy constructor for Group
     Group(const Group& obj)
     {
         this->group = new Student[obj.groupSize];
@@ -489,23 +534,24 @@ public:
         this->specialty = obj.specialty;
         for (int i = 0; i < obj.groupSize; i++)
             this->group[i] = obj.group[i];
-        throwError();
+        ThrowError();
         Logger::GetInstance()->Write("Group created");
     }
 
+    // Destructor for Group
     ~Group()
     {
         if (group != nullptr)
         {
             delete[] group;
             group_count++;
-            cout << "Total count of groups: " << group_count << "\n";// потом чистится память от всего массива (уже указателей, а не объектов)
+            cout << "Total count of groups: " << group_count << "\n";
         }
         Logger::GetInstance()->Write("Group destroyed");
-
     }
 
-    void printGroup()
+    // Print information about the group
+    void PrintGroup()
     {
         cout << "Group name: " << groupName << endl;
         cout << "Specialty: " << specialty << endl;
@@ -536,14 +582,19 @@ public:
         }
     }
 
-    int getGroupSize() const
+    // Get the size of the group
+    int GetGroupSize() const
     {
         return groupSize;
     }
-    Student getStudentByIndex(int index)const
+
+    // Get a student from the group by index
+    Student GetStudentByIndex(int index) const
     {
         return group[index];
     }
+
+    // Add a new student to the group
     void AddStudent(const Student& new_student)
     {
         Student* tmp = new Student[groupSize + 1];
@@ -557,21 +608,22 @@ public:
         groupSize++;
     }
 
-
+    // Merge the current group with another group
     void MergeWithGroup(Group& another_group)
     {
-        for (int i = 0; i < another_group.getGroupSize(); i++)
+        for (int i = 0; i < another_group.GetGroupSize(); i++)
         {
-            this->AddStudent(another_group.getStudentByIndex(i));
+            this->AddStudent(another_group.GetStudentByIndex(i));
         }
 
-        int k = another_group.getGroupSize();
+        int k = another_group.GetGroupSize();
         for (int i = 0; i < k; i++)
         {
             another_group.DeleteTheWorstStudent();
         }
     }
 
+    // Transfer a student from the current group to another group
     void TransferStudent(Group& other, int index)
     {
         if (index >= 0 && index < groupSize)
@@ -583,12 +635,13 @@ public:
         }
     }
 
+    // Delete students who failed their exams
     void DeleteFailedStudents()
     {
         int failedExams = 0, newSize = 0;
         for (int i = 0; i < groupSize; i++)
         {
-            if (!(group[i].GetExamRateByIndex(i) > 4))//pass-grade is 4
+            if (!(group[i].GetExamRateByIndex(i) > 4)) // Pass-grade is 4
                 failedExams++;
         }
         newSize = failedExams;
@@ -601,17 +654,19 @@ public:
                 j++;
             }
         }
-        delete[]group;
+        delete[] group;
         group = tmp;
         groupSize -= failedExams;
     }
+
+    // Delete the worst-performing student
     void DeleteTheWorstStudent()
     {
         int worst = 0, tmp1 = 0, first = 0, index = 0;
         Student* tmp = new Student[groupSize - 1];
         for (int i = 0; i < groupSize; i++)
         {
-            int gradesCount = group[i].GetHometasksRatesCount();
+            int gradesCount = group[i].GetHometaskRatesCount();
             for (int j = 0; j < gradesCount; i++)
                 tmp1 = group[i].GetHometaskRateByIndex(j);
             if (gradesCount > 0 && first == 0)
@@ -636,7 +691,7 @@ public:
             else
                 tmp[i - 1] = group[i];
         }
-        delete[]group;
+        delete[] group;
         group = tmp;
     }
 };
@@ -650,7 +705,7 @@ Logger* Logger::instance = nullptr;
 
 int main()
 {
-    Logger::GetInstance()->Write("main started by Alex ");
+    Logger::GetInstance()->Write("Main started by Alex");
     Student original;
-    Logger::GetInstance()->Write("main ended by Alex ");
+    Logger::GetInstance()->Write("Main ended by Alex");
 }
